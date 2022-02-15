@@ -49,7 +49,6 @@ routes.get("/stocks/:stock_name/history", async (req, res) => {
     name: data["Meta Data"]["2. Symbol"],
     prices,
   };
-  console.log(formatData);
   return res.json(formatData);
 });
 
@@ -66,16 +65,27 @@ routes.get("/stocks/:stock_name/compare", async (req, res) => {
 
 routes.get("/stocks/:stock_name/gains", async (req, res) => {
   const { stock_name } = req.params;
-  const params = req.query;
+  const { purchasedAmount, purchasedAt } = req.query;
+
+  const qtdStock = parseInt(`${purchasedAmount}`, 10);
 
   /* 
     obter de params a quantidade e a data para filtar o resultado
     - `purchasedAmount` - `number` com o número de ações
     - `purchasedAt` - `string` com data de compra em formato ISO 8601
+      comprei por 10 hoje vale 15 eu tenho 5 ativos
   */
+
   const { data } = await axios(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock_name}&outputsize=full&apikey=6ISR17BLFDBXVXIY`
   );
+  const infoRecent = Object.keys(data["Time Series (Daily)"])[0];
+  const valueOld = data["Time Series (Daily)"][`${purchasedAt}`]["4. close"];
+  const valueNow = data["Time Series (Daily)"][`${infoRecent}`]["4. close"];
+
+  const rteurnGains = (valueNow - valueOld) * qtdStock;
+
+  return res.json({ gains: rteurnGains });
 });
 
 export { routes };
