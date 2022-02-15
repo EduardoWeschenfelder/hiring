@@ -1,15 +1,81 @@
 import { Router } from "express";
 import axios from "axios";
+import dayjs from "dayjs";
 
 const routes = Router();
 
 routes.get("/stocks/:stock_name/quote", async (req, res) => {
   const { stock_name } = req.params;
   const { data } = await axios(
-    `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock_name}&apikey=6ISR17BLFDBXVXIY`
+    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock_name}&apikey=6ISR17BLFDBXVXIY`
   );
+  const infoToday = Object.keys(data["Time Series (Daily)"])[0];
+  const formatData = {
+    name: data["Meta Data"]["2. Symbol"],
+    lastPrice: data["Time Series (Daily)"][`${infoToday}`]["4. close"],
+    pricedAt: infoToday,
+  };
+  return res.json(formatData);
+});
 
-  return res.json(data);
+routes.get("/stocks/:stock_name/history", async (req, res) => {
+  const { stock_name } = req.params;
+  const { from, to } = req.query;
+  /* 
+    obter de params as tadas para filtar o resultado
+    - `from` - string com data em formato ISO 8601
+    - `to` - string com data em format ISO 8601
+  */
+
+  const { data } = await axios(
+    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock_name}&outputsize=full&apikey=6ISR17BLFDBXVXIY`
+  );
+  const arrayResult = Object.keys(data["Time Series (Daily)"]);
+  const periodo = arrayResult.slice(
+    arrayResult.indexOf(`${to}`),
+    arrayResult.indexOf(`${from}`)
+  );
+  const prices = [];
+  for await (const day of periodo) {
+    const dataPrice = {
+      opening: data["Time Series (Daily)"][`${day}`]["1. open"],
+      low: data["Time Series (Daily)"][`${day}`]["2. high"],
+      high: data["Time Series (Daily)"][`${day}`]["3. low"],
+      closing: data["Time Series (Daily)"][`${day}`]["4. close"],
+    };
+    prices.push(dataPrice);
+  }
+  const formatData = {
+    name: data["Meta Data"]["2. Symbol"],
+    prices,
+  };
+  console.log(formatData);
+  return res.json(formatData);
+});
+
+routes.get("/stocks/:stock_name/compare", async (req, res) => {
+  const { stock_name } = req.params;
+  /* 
+    comparar uma ação com uma lista de outras 
+    - pode ser feito com os ativos "salvos"
+  */
+  const { data } = await axios(`
+  https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock_name}&apikey=6ISR17BLFDBXVXIY
+  `);
+});
+
+routes.get("/stocks/:stock_name/gains", async (req, res) => {
+  const { stock_name } = req.params;
+  const params = req.query;
+
+  /* 
+    obter de params a quantidade e a data para filtar o resultado
+    - `purchasedAmount` - `number` com o número de ações
+    - `purchasedAt` - `string` com data de compra em formato ISO 8601
+  */
+  const { data } = await axios(
+    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock_name}&outputsize=full&apikey=6ISR17BLFDBXVXIY`
+  );
 });
 
 export { routes };
