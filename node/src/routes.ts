@@ -83,9 +83,23 @@ routes.get("/stocks/:stock_name/gains", async (req, res) => {
   const valueOld = data["Time Series (Daily)"][`${purchasedAt}`]["4. close"];
   const valueNow = data["Time Series (Daily)"][`${infoRecent}`]["4. close"];
 
-  const rteurnGains = (valueNow - valueOld) * qtdStock;
+  const returnGains = ((valueNow - valueOld) * qtdStock).toLocaleString(
+    "pt-br",
+    {
+      style: "currency",
+      currency: "BRL",
+    }
+  );
+  const formatData = {
+    name: data["Meta Data"]["2. Symbol"],
+    purchasedAmount: qtdStock,
+    purchasedAt,
+    priceAtDate: valueOld,
+    lastPrice: valueNow,
+    capitalGains: returnGains,
+  };
 
-  return res.json({ gains: rteurnGains });
+  return res.json(formatData);
 });
 
 export { routes };
