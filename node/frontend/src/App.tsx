@@ -1,24 +1,8 @@
-import react, { useState, FC } from "react";
+import React, { useState } from "react";
+
 import "./App.css";
-
 import api from "./services/api";
-
-export const PlaceItem: FC<{
-  name: string;
-  lastPrice: number;
-  pricedAt: string;
-}> = ({ name, lastPrice, pricedAt }) => (
-  // <a href={link} className="focus:outline-none">
-  <div className="relative rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 hover:shadow hover:bg-white">
-    <div className="flex-1 min-w-0">
-      <span className="absolute inset-0" aria-hidden="true" />
-      <p className="text-sm font-medium text-gray-900">{name}</p>
-      <p className="text-sm text-gray-500">{lastPrice}</p>
-      <p className="text-sm text-gray-500">{pricedAt}</p>
-    </div>
-  </div>
-  // </a>
-);
+import { PlaceItem, HistoryItem, ProjectGains } from "./components/placeItem";
 
 function App() {
   const [stock, setStock] = useState("");
@@ -26,29 +10,61 @@ function App() {
   const [dateTo, setDateTo] = useState("");
   const [qtdStock, setQtdStock] = useState("");
 
-  const portifolio: any = [
-    { name: "IBM", lastPrice: 130.15, pricedAt: "2022-14-02" },
-    { name: "TSCO.LON", lastPrice: 130.15, pricedAt: "2022-14-02" },
-  ];
+  const [search, setSeach] = useState({
+    name: "",
+    lastPrice: 0,
+    pricedAt: "",
+  });
+  const [history, setHistory] = useState({
+    name: "",
+    prices: [],
+  });
+  const [projectGains, setProjectGains] = useState({
+    capitalGains: 0,
+    lastPrice: 0,
+    name: "",
+    priceAtDate: 0,
+    purchasedAmount: 0,
+    purchasedAt: "",
+  });
 
   async function handleSubmit(e: any) {
     // Prevent form to change to "next" page
     e.preventDefault();
+    // a cada busca limpa a busca anterior
+    setSeach({
+      name: "",
+      lastPrice: 0,
+      pricedAt: "",
+    });
+    setHistory({ name: "", prices: [] });
+    setProjectGains({
+      capitalGains: 0,
+      lastPrice: 0,
+      name: "",
+      priceAtDate: 0,
+      purchasedAmount: 0,
+      purchasedAt: "",
+    });
 
     if (stock && !dateFrom && !dateTo) {
+      //busca simples cotação atual
       const { data } = await api.get(`/stocks/${stock}/quote`);
-
-      console.log(data);
+      setSeach(data);
     } else if (stock && dateFrom && dateTo) {
+      //busca histórico de cota//busca simples cotaão atuação entre duas datas
       const { data } = await api.get(
         `/stocks/${stock}/history?from=${dateFrom}&to=${dateTo}`
       );
-      console.log(data);
+      setHistory(data);
     } else if (stock && dateFrom && qtdStock) {
+      // busca projeção de ganhos ou perdas
       const { data } = await api.get(
         `/stocks/${stock}/gains?purchasedAmount=${qtdStock}&purchasedAt=${dateFrom}`
       );
       console.log(data);
+
+      setProjectGains(data);
     }
 
     // Clean fields
@@ -56,6 +72,8 @@ function App() {
     setDateFrom("");
     setDateTo("");
     setQtdStock("");
+
+    setHistory({ name: "", prices: [] });
   }
 
   return (
@@ -110,19 +128,66 @@ function App() {
         <button type="submit">Buscar</button>
       </form>
 
-      <div className="px-6 lg:px-8 mt-4">
+      <div className="px-6 lg:px-8 mt-4 border-2 py-4">
+        <p className="py-4">Resultado cota de um ativo:</p>
+        {search.lastPrice !== 0 ? (
+          <PlaceItem
+            name={search.name}
+            lastPrice={search.lastPrice.toLocaleString("pt-br", {
+              style: "currency",
+              currency: "BRL",
+            })}
+            pricedAt={search.pricedAt}
+          />
+        ) : null}
+      </div>
+      <div className="px-6 lg:px-8 mt-4 border-2 py-4">
+        <p className="py-4">Resultado histórico entre duas datas:</p>
+        <p>{history.name}</p>
+        {history.prices.map((item: any) => {
+          return (
+            <HistoryItem
+              closing={item.closing}
+              high={item.high}
+              low={item.low}
+              opening={item.opening}
+              pricedAt={item.pricedAt}
+            />
+          );
+        })}
+      </div>
+
+      <div className="px-6 lg:px-8 mt-4 border-2 py-4">
+        <p className="py-4">Resultado projeção de ganhos ou perdas</p>
+        {projectGains.name !== "" ? (
+          <ProjectGains
+            capitalGains={projectGains.capitalGains}
+            lastPrice={projectGains.lastPrice}
+            name={projectGains.name}
+            priceAtDate={projectGains.priceAtDate}
+            purchasedAmount={projectGains.purchasedAmount}
+            purchasedAt={projectGains.purchasedAt}
+          />
+        ) : null}
+      </div>
+
+      {/* <div className="px-6 lg:px-8 mt-4 border-2 py-4">
+        <p>Resultado busca por Ação:</p>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {portifolio.map((item: any) => {
             return (
               <PlaceItem
                 name={item.name}
-                lastPrice={item.lastPrice}
+                lastPrice={item.lastPrice.toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
                 pricedAt={item.pricedAt}
               />
             );
           })}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

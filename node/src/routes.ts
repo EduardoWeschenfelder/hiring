@@ -13,7 +13,9 @@ routes.get("/stocks/:stock_name/quote", async (req, res) => {
   const infoToday = Object.keys(data["Time Series (Daily)"])[0];
   const formatData = {
     name: data["Meta Data"]["2. Symbol"],
-    lastPrice: data["Time Series (Daily)"][`${infoToday}`]["4. close"],
+    lastPrice: parseFloat(
+      data["Time Series (Daily)"][`${infoToday}`]["4. close"]
+    ),
     pricedAt: infoToday,
   };
   return res.json(formatData);
@@ -39,10 +41,11 @@ routes.get("/stocks/:stock_name/history", async (req, res) => {
   const prices = [];
   for await (const day of periodo) {
     const dataPrice = {
-      opening: data["Time Series (Daily)"][`${day}`]["1. open"],
-      low: data["Time Series (Daily)"][`${day}`]["2. high"],
-      high: data["Time Series (Daily)"][`${day}`]["3. low"],
-      closing: data["Time Series (Daily)"][`${day}`]["4. close"],
+      opening: parseFloat(data["Time Series (Daily)"][`${day}`]["1. open"]),
+      low: parseFloat(data["Time Series (Daily)"][`${day}`]["2. high"]),
+      high: parseFloat(data["Time Series (Daily)"][`${day}`]["3. low"]),
+      closing: parseFloat(data["Time Series (Daily)"][`${day}`]["4. close"]),
+      pricedAt: day,
     };
     prices.push(dataPrice);
   }
@@ -88,8 +91,8 @@ routes.get("/stocks/:stock_name/gains", async (req, res) => {
     name: data["Meta Data"]["2. Symbol"],
     purchasedAmount: qtdStock,
     purchasedAt,
-    priceAtDate: valueOld,
-    lastPrice: valueNow,
+    priceAtDate: parseFloat(valueOld),
+    lastPrice: parseFloat(valueNow),
     capitalGains: returnGains,
   };
 
