@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import react, { useState, FC } from "react";
 import "./App.css";
 
 import api from "./services/api";
+
+export const PlaceItem: FC<{
+  name: string;
+  lastPrice: number;
+  pricedAt: string;
+}> = ({ name, lastPrice, pricedAt }) => (
+  // <a href={link} className="focus:outline-none">
+  <div className="relative rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 hover:shadow hover:bg-white">
+    <div className="flex-1 min-w-0">
+      <span className="absolute inset-0" aria-hidden="true" />
+      <p className="text-sm font-medium text-gray-900">{name}</p>
+      <p className="text-sm text-gray-500">{lastPrice}</p>
+      <p className="text-sm text-gray-500">{pricedAt}</p>
+    </div>
+  </div>
+  // </a>
+);
 
 function App() {
   const [stock, setStock] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [qtdStock, setQtdStock] = useState("");
+
+  const portifolio: any = [
+    { name: "IBM", lastPrice: 130.15, pricedAt: "2022-14-02" },
+    { name: "TSCO.LON", lastPrice: 130.15, pricedAt: "2022-14-02" },
+  ];
 
   async function handleSubmit(e: any) {
     // Prevent form to change to "next" page
@@ -87,6 +109,20 @@ function App() {
         </div>
         <button type="submit">Buscar</button>
       </form>
+
+      <div className="px-6 lg:px-8 mt-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {portifolio.map((item: any) => {
+            return (
+              <PlaceItem
+                name={item.name}
+                lastPrice={item.lastPrice}
+                pricedAt={item.pricedAt}
+              />
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

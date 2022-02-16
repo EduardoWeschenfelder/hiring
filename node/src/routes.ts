@@ -1,6 +1,7 @@
 import { Router } from "express";
 import axios from "axios";
-import dayjs from "dayjs";
+
+const ativos = [];
 
 const routes = Router();
 
@@ -68,13 +69,6 @@ routes.get("/stocks/:stock_name/gains", async (req, res) => {
   const { purchasedAmount, purchasedAt } = req.query;
 
   const qtdStock = parseInt(`${purchasedAmount}`, 10);
-
-  /* 
-    obter de params a quantidade e a data para filtar o resultado
-    - `purchasedAmount` - `number` com o número de ações
-    - `purchasedAt` - `string` com data de compra em formato ISO 8601
-      comprei por 10 hoje vale 15 eu tenho 5 ativos
-  */
 
   const { data } = await axios(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock_name}&outputsize=full&apikey=6ISR17BLFDBXVXIY`
