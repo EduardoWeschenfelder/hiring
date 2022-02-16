@@ -1,3 +1,4 @@
+// desabilidato movendo gradualmente
 import { Router } from "express";
 import axios from "axios";
 

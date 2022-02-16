@@ -56,6 +56,8 @@ function App() {
       const { data } = await api.get(
         `/stocks/${stock}/history?from=${dateFrom}&to=${dateTo}`
       );
+      console.log(data);
+
       setHistory(data);
     } else if (stock && dateFrom && qtdStock) {
       // busca projeção de ganhos ou perdas
@@ -72,8 +74,6 @@ function App() {
     setDateFrom("");
     setDateTo("");
     setQtdStock("");
-
-    setHistory({ name: "", prices: [] });
   }
 
   return (
