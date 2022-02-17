@@ -1,17 +1,27 @@
+# Deploy link
+
+https://620db6d96dfc5b00977ec5e8--goofy-carson-066ab8.netlify.app/
+
+faltou algumas coisas, eu tenteri fazer o maximo possivel dentro do prazo definido para hoje
+
+gostaria de ter separado melhor as responsabilidades e documentado melhor
+
+para e entrega será isso mas pretendo continuar esse desenvolvimento para melhorar meu potifolio
+
 # Background
 
 Uma corretora de ações está desenvolvendo um sistema para permitir que pequenos investidores possam tomar decisões melhores sobre seu portfólio. Uma das funcionalidades importantes é a de verificar o desempenho de uma ação em cinco cenários:
 
-   - Preço atual;
-   - Preço histórico;
-   - Preço atual em comparação a outras ações;
-   - Projeção de ganhos com compra em data específica.
-   
+- Preço atual;
+- Preço histórico;
+- Preço atual em comparação a outras ações;
+- Projeção de ganhos com compra em data específica.
+
 Para isso, a equipe de software da empresa optou por desenvolver duas aplicações: um serviço de backend especializado nesses requisitos (que permitirá que essas funcionalidades sejam reutilizadas em outros produtos da empresa) e um dashboard configurável que dará visibilidade aos dados. Sua missão para este teste é implementar ambas as partes.
 
 # Requisitos técnicos da solução
 
-O serviço deverá ser implementado via HTTP, e o formato de serialização das requisições e respostas será JSON. O backend deverá ser implementado em node.js, seja com `http` puro, seja com framework de sua escolha. O frontend será uma single-page application (SPA), e poderá ser implementado com a solução de sua escolha: Angular, Angular 2/4, Vue.js, React, você decide. Forneça, em conjunto, uma configuração de build com Webpack, rollup, browserify ou outra solução de sua escolha, e um comando único para subir sua aplicação. 
+O serviço deverá ser implementado via HTTP, e o formato de serialização das requisições e respostas será JSON. O backend deverá ser implementado em node.js, seja com `http` puro, seja com framework de sua escolha. O frontend será uma single-page application (SPA), e poderá ser implementado com a solução de sua escolha: Angular, Angular 2/4, Vue.js, React, você decide. Forneça, em conjunto, uma configuração de build com Webpack, rollup, browserify ou outra solução de sua escolha, e um comando único para subir sua aplicação.
 
 Sua solução deverá ter testes automatizados, tanto no frontend quanto no backend.
 
@@ -49,7 +59,7 @@ Se você não tiver ideia de como organizar essas funcionalidades, não há prob
 
 ### Endpoints
 
-#### `/stocks/:stock_name/quote` - Retorna a cotação mais recente para a ação ####
+#### `/stocks/:stock_name/quote` - Retorna a cotação mais recente para a ação
 
 Entrada:
 
@@ -72,7 +82,7 @@ $ curl -H "Accept: application/json" http://coolfinancialservice.com/stock/PETR4
 { "name": "PETR4.SA", "lastPrice": 25.11, "pricedAt": "2017-06-23T14:15:16Z" }
 ```
 
-#### `/stocks/:stock_name/history?from=<string>&to=<string>` - Retorna preço histórico da ação num intervalo inclusivo ####
+#### `/stocks/:stock_name/history?from=<string>&to=<string>` - Retorna preço histórico da ação num intervalo inclusivo
 
 Entrada:
 
@@ -106,7 +116,7 @@ $ curl -H "Accept: application/json" http://coolfinancialservice.com/stock/PETR4
 { "name": "PETR4.SA", "prices": [{ "opening": 14.67, "low": 14.57, "high": 14.89, "closing": 14.85, "pricedAt": "2017-04-04" }, { "opening": 15.05, "low": 14.50, "high": 15.16, "closing": 14.57, "pricedAt": "2017-04-05" }
 ```
 
-#### `/stocks/:stock_name/compare` - Compara uma ação com uma ou mais ações ####
+#### `/stocks/:stock_name/compare` - Compara uma ação com uma ou mais ações
 
 Entrada:
 
@@ -136,15 +146,15 @@ Retorno:
   "pricedAt": string // data e hora no formato ISO 8601, UTC
 }
 ```
-  
+
 Exemplo de uso:
 
 ```
 $ curl -H "Accept: application/json" -H "Content-Type: application/json" -d '{ "stocks": ["TIMP3.SA", "VIVT4.SA"] }' http://coolfinancialservice.com/stock/OIBR4.SA/compare
 { "lastPrices": [{ "name": "OIBR4.SA", "lastPrice": 3.41, "pricedAt": "2017-05-18T14:15:16Z" }, { "name": "TIMP3.SA", "lastPrice": 9.93, "pricedAt": "2017-05-18T14:15:16Z" }, { "name": "VIVT4.SA", "lastPrice": 45.92 }]}
 ```
-  
-#### `/stocks/:stock_name/gains?purchasedAmount=<number>&purchasedAt=<string>` - Projeta ganhos com compra em uma data específica ####
+
+#### `/stocks/:stock_name/gains?purchasedAmount=<number>&purchasedAt=<string>` - Projeta ganhos com compra em uma data específica
 
 Entrada:
 
@@ -171,6 +181,5 @@ Exemplo de uso:
 $ curl -H "Accept: application/json" http://coolfinancialservice.com/stock/USIM5.SA?purchasedAmount=100&purchasedAt=2016-05-31
 { "name": "USIM5.SA", "purchasedAmount": 100, "purchasedAt": "2016-05-31", "priceAtDate": 3.97, "lastPrice": 4.33, "capitalGains": 36.0 }
 ```
-
 
 https://www.alphavantage.co
